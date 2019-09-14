@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/wmde/PhabMetrics#readme",
   "dependencies": {
+    "chai": "^4.2.0",
     "mocha": "^6.2.0"
   }
 }
