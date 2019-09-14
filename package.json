@@ -1,0 +1,28 @@
+{
+  "name": "phabmetrics",
+  "version": "1.0.0",
+  "description": "Collection of scripts to aid collect some metrics on Phabricator instances",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wmde/PhabMetrics.git"
+  },
+  "keywords": [
+    "Phabricator",
+    "Metrics",
+    "Leadtime",
+    "Throughput"
+  ],
+  "author": "Alaa Sarhan <alaa.sarhan@wikimedia.de>",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/wmde/PhabMetrics/issues"
+  },
+  "homepage": "https://github.com/wmde/PhabMetrics#readme",
+  "dependencies": {
+    "mocha": "^6.2.0"
+  }
+}
