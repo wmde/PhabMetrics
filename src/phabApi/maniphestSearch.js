@@ -14,19 +14,7 @@ class ManiphestSearch {
   }
 
   async call(params = {}) {
-    let { statuses, projects, subTypes, rangeStart, rangeEnd } = params
-
-    if (typeof statuses !== 'array') {
-      statuses = []
-    }
-
-    if (typeof projects !== 'array') {
-      projects = []
-    }
-
-    if (typeof subTypes !== 'array') {
-      subTypes = []
-    }
+    let { statuses, projects, subtypes, rangeStart, rangeEnd } = params
 
     if (!moment.isMoment(rangeStart)) {
       rangeStart = moment().startOf('week')
@@ -42,11 +30,18 @@ class ManiphestSearch {
 
     return new Promise( (resolve, reject) => {
       const constraints = {
-        statuses,
-        projects,
-        subTypes,
         createdStart: rangeStart.unix(),
         closedEnd: rangeEnd.unix()
+      }
+
+      if (Array.isArray(statuses) && statuses.length) {
+      	constraints.statuses = statuses
+      }
+      if (Array.isArray(projects) && projects.length) {
+      	constraints.projects = projects
+      }
+      if (Array.isArray(subtypes) && subtypes.length) {
+      	constraints.subtypes = subtypes
       }
 
       this.canduit.exec('maniphest.search', { constraints }, (error, result) => {

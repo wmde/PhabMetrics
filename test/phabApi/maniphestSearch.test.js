@@ -5,9 +5,6 @@ const { createManiphestSearch, ManiphestSearch } = require('../../src/phabApi/ma
 
 function getDefaultConstraints(now) {
   return {
-    statuses: [],
-    projects: [],
-    subTypes: [],
     createdStart: moment(now).startOf('week').unix(),
     closedEnd: moment(now).endOf('week').unix()
   }
