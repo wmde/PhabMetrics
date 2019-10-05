@@ -7,6 +7,8 @@ prints out CSV file with following columns:
 - createdOn: date of task creation
 - closedOn: date of task closing (as resolved or declined)
 - leadtimeDays: leadtime in days (working days, taking 5 days a week)
+- status: the task status name (resolved or declined)
+- subtype: the task subtype
 
 ### Arguments
 
