@@ -7,7 +7,16 @@ const { Parser } = require('json2csv')
 const { createManiphestSearch } = require('../src/phabApi/maniphestSearch')
 const calcLeadTime = require('../src/calcLeadTime')
 
+const apiBase = args.api_base || process.env.CONDUIT_API_BASE
 const apiToken = args.api_token || process.env.CONDUIT_API_TOKEN
+
+if (!apiBase) {
+	console.error(`
+		API base url is required. Specify one through argument api_base
+		or environment variable CONDUIT_API_BASE
+	`);
+	return
+}
 
 if (!apiToken) {
 	console.error(`
@@ -18,7 +27,7 @@ if (!apiToken) {
 }
 
 const canduit = createCanduit({
-	api: 'https://phabricator.wikimedia.org/api/',
+	api: apiBase,
 	token: apiToken
 }, (error, canduit) => {
 	if (error) {
@@ -29,6 +38,10 @@ const canduit = createCanduit({
 	const maniphestSearch = createManiphestSearch(canduit)
 	maniphestSearch.call(maniphestSearchParams)
 		.then((results) => {
+			if (!results || !Array.isArray(results.data)) {
+				return []
+			}
+
 			return results.data.map(t => {
 				const startTime = t.fields.dateCreated
 				const endTime = t.fields.dateClosed
@@ -36,11 +49,18 @@ const canduit = createCanduit({
 					id: `T${t.id}`,
 					createdOn: moment.unix(startTime).format('YYYY-MM-DD HH:mm:ss'),
 					closedOn: moment.unix(endTime).format('YYYY-MM-DD HH:mm:ss'),
+					status: t.fields.status && t.fields.status.name,
+					subtype: t.fields.subtype,
 					leadTime: calcLeadTime(startTime, endTime)
 				}
 			});
 		})
 		.then((tasksWithLeadTime) => {
+			if (!Array.isArray(tasksWithLeadTime) || !tasksWithLeadTime.length) {
+				console.log(`No tasks found.`);
+				return
+			}
+
 			const fields = Object.keys(tasksWithLeadTime[0]);
 			const opts = { fields };
 			const parser = new Parser(opts);

@@ -5,7 +5,7 @@ const SECONDS_PER_DAY = 24 * 60 * 60;
  * @param  {int} startTime       unix-timestamp of task start
  * @param  {int} endTime         unix-timestamp of task end
  * @param  {Number} workDaysPerWeek
- * @return {Number}              lead time in days
+ * @return {Number}              lead time in days, rounded up to nearest int (ceil)
  */
 module.exports = (startTime, endTime, workDaysPerWeek = 5) => {
 	if (workDaysPerWeek > 7) {
