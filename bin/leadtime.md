@@ -12,10 +12,18 @@ prints out CSV file with following columns:
 
 ### Arguments
 
+**Conduit API base**
+Conduit API base is the base url of the targeted Phabricator instance.
+This configuration must include the full url leading to api base, which typically
+includes `/api/` at the end of it.
+
+The script will check first for `api_base` argument, and then for an
+env variable `CONDUIT_API_BASE`.
+
 **Conduit API token**
 
 Conduit API token is needed to access Phabricator. You can create one for your
-Phabricator account at [Settings -> Conduit API Tokens](https://phabricator.wikimedia.org/settings/user/alaa_wmde/page/apitokens/)
+Phabricator account under Settings -> Conduit API Token
 
 The script will check first for `api_token` argument, and then for an
 env variable `CONDUIT_API_TOKEN`.
