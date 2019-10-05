@@ -3,10 +3,10 @@ const sinon = require('sinon')
 const moment = require('moment')
 const { createManiphestSearch, ManiphestSearch } = require('../../src/phabApi/maniphestSearch.js')
 
-function getDefaultConstraints(now) {
+function getDefaultConstraints(now, rangeStartEvent = 'created', rangeEndEvent = 'closed') {
   return {
-    createdStart: moment(now).startOf('week').unix(),
-    closedEnd: moment(now).endOf('week').unix()
+    [`${rangeStartEvent}Start`]: moment(now).startOf('week').unix(),
+    [`${rangeEndEvent}End`]: moment(now).endOf('week').unix()
   }
 }
 
@@ -91,6 +91,55 @@ describe('maniphestSearch.js', () => {
           createManiphestSearch(canduit).call({ rangeStart, rangeEnd })
 
           execMock.verify()
+        })
+      })
+
+      describe('adjusts range filtering events to rangeStartEvent and rangeEndEvent params', () => {
+        it('when rangeStartEvent is specified', () => {
+          const rangeStart = moment('2050-09-06')
+          const rangeEnd = moment('2050-09-05')
+          const expectedRangeEnd = rangeStart.clone().endOf('week')
+          const expectedParamsToCanduit = {
+            constraints: {
+              ...getDefaultConstraints(clock.Date.now(), 'updated'),
+              updatedStart: rangeStart.unix(),
+              closedEnd: expectedRangeEnd.unix()
+            }
+          }
+
+          const { canduit, execMock } = getCanduitMock()
+          execMock.once().withArgs('maniphest.search', expectedParamsToCanduit)
+
+          createManiphestSearch(canduit).call({ rangeStart, rangeEnd, rangeStartEvent: 'updated' })
+
+          execMock.verify()
+        })
+
+        it('when rangeEndEvent is specified', () => {
+          const rangeStart = moment('2050-09-06')
+          const rangeEnd = moment('2050-09-05')
+          const expectedRangeEnd = rangeStart.clone().endOf('week')
+          const expectedParamsToCanduit = {
+            constraints: {
+              ...getDefaultConstraints(clock.Date.now(), 'created', 'updated'),
+              createdStart: rangeStart.unix(),
+              updatedEnd: expectedRangeEnd.unix()
+            }
+          }
+
+          const { canduit, execMock } = getCanduitMock()
+          execMock.once().withArgs('maniphest.search', expectedParamsToCanduit)
+
+          createManiphestSearch(canduit).call({ rangeStart, rangeEnd, rangeEndEvent: 'updated' })
+
+          execMock.verify()
+        })
+
+        it('when rangeEndEvent is before rangeStartEvent, then throw', () => {
+          const { canduit } = getCanduitMock()
+          assert.throws(() => {
+            createManiphestSearch(canduit).call({ rangeStartEvent: 'closed', rangeEndEvent: 'created' })
+          })
         })
       })
 

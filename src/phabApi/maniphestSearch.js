@@ -3,26 +3,33 @@ const moment = require('moment')
 const EVENT_CREATED = 'created'
 const EVENT_UPDATED = 'updated'
 const EVENT_CLOSED = 'closed'
-const EVENT_TYPES = [ EVENT_CLOSED, EVENT_UPDATED, EVENT_CREATED]
+const EVENT_TYPES = [ EVENT_CREATED, EVENT_UPDATED, EVENT_CLOSED]
 
-function isValidEvent(event) {
-  return EVENT_TYPES.indexOf(event) > -1
+function validateEvents(rangeStartEvent, rangeEndEvent) {
+  const startEventIndex = EVENT_TYPES.indexOf(rangeStartEvent)
+  const endEventIndex = EVENT_TYPES.indexOf(rangeEndEvent)
+
+  if (startEventIndex === -1) {
+    throw `rangeStartEvent '${rangeStartEvent}' is invalid. Options are ${EVENT_TYPES}`
+  }
+
+  if (endEventIndex === -1) {
+    throw `rangeEndEvent '${rangeEndEvent}' is invalid. Options are ${EVENT_TYPES}`
+  }
+
+  if (endEventIndex < startEventIndex) {
+    throw `invalid combination where rangeEndEvent '${rangeEndEvent}' happens before rangeStartEvent '${rangeStartEvent}'`
+  }
 }
 
 function getRangeEvents({ rangeStartEvent, rangeEndEvent }) {
-    rangeStartEvent = rangeStartEvent || EVENT_CREATED
-    rangeEndEvent = rangeEndEvent || EVENT_CLOSED
+  rangeStartEvent = rangeStartEvent || EVENT_CREATED
+  rangeEndEvent = rangeEndEvent || EVENT_CLOSED
 
-    if (!isValidEvent(rangeStartEvent)) {
-      throw `rangeStartEvent '${rangeStartEvent}' is invalid. Options are ${EVENT_TYPES}`
-    }
+  validateEvents(rangeStartEvent, rangeEndEvent)
 
-    if (!isValidEvent(rangeEndEvent)) {
-      throw `rangeEndEvent '${rangeEndEvent}' is invalid. Options are ${EVENT_TYPES}`
-    }
-
-    return { rangeStartEvent, rangeEndEvent }
-  }
+  return { rangeStartEvent, rangeEndEvent }
+}
 
 class ManiphestSearch {
   get canduit() {
@@ -37,7 +44,7 @@ class ManiphestSearch {
     this.canduit = canduit
   }
 
-  async call(params = {}) {
+  call(params = {}) {
     let { statuses, projects, subtypes, rangeStart, rangeEnd } = params
 
     const { rangeStartEvent, rangeEndEvent } = getRangeEvents(params)
