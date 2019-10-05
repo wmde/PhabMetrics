@@ -39,7 +39,6 @@ const canduit = createCanduit({
 	maniphestSearch.call(maniphestSearchParams)
 		.then((results) => {
 			if (!results || !Array.isArray(results.data)) {
-				console.log(results)
 				return []
 			}
 
