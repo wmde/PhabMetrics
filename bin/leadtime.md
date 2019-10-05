@@ -13,6 +13,7 @@ prints out CSV file with following columns:
 ### Arguments
 
 **Conduit API base**
+
 Conduit API base is the base url of the targeted Phabricator instance.
 This configuration must include the full url leading to api base, which typically
 includes `/api/` at the end of it.
