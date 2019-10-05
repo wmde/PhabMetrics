@@ -38,7 +38,7 @@ const canduit = createCanduit({
   maniphestSearch.call(maniphestSearchParams)
     .then(results => {
       if (!results || !Array.isArray(results.data)) {
-        return []
+        return null
       }
 
       const aggregatedResults = {}
@@ -47,7 +47,7 @@ const canduit = createCanduit({
       results.data.forEach(t => {
         const key = mapTaskToKey(t)
 
-        if (!key in aggregatedResults) {
+        if (!(key in aggregatedResults)) {
           aggregatedResults[key] = 0
         }
 
@@ -57,7 +57,7 @@ const canduit = createCanduit({
       return aggregatedResults
     })
     .then(aggregatedResults => {
-      if (!Array.isArray(aggregatedResults) || !aggregatedResults.length) {
+      if (!aggregatedResults) {
         return []
       }
 
@@ -81,10 +81,10 @@ const canduit = createCanduit({
         return
       }
 
-      const fields = Object.keys(tasksWithLeadTime[0]);
+      const fields = Object.keys(sortedResults[0]);
       const opts = { fields };
       const parser = new Parser(opts);
-      const csv = parser.parse(tasksWithLeadTime);
+      const csv = parser.parse(sortedResults);
       const output = args.o || args.output || `${getAggregationOption()}_throughput_${maniphestSearchParams.rangeStart.format()}-${maniphestSearchParams.rangeEnd.format()}.csv`;
       fs.writeFile(output, csv, err => {
         if (err) {
@@ -100,11 +100,11 @@ const canduit = createCanduit({
 function getKeyMapper(aggregationOption) {
   switch(aggregationOption) {
   case 'daily':
-    return t => { moment.unix(t.dateClosed).format('YYYY-MM-DD') }
+    return t => moment.unix(t.fields.dateClosed).format('YYYY-MM-DD')
   case 'weekly':
-    return t => { moment.unix(t.dateClosed).format('YYYY ww') }
-  case 'monthly'
-    return t => { moment.unix(t.dateClosed).format('YYYY-MM') }
+    return t => moment.unix(t.fields.dateClosed).format('YYYY ww')
+  case 'monthly':
+    return t => moment.unix(t.fields.dateClosed).format('YYYY-MM')
   }
 
   throw `unrecognized aggregation type '${aggregationOption}'`
@@ -112,12 +112,12 @@ function getKeyMapper(aggregationOption) {
 
 function getKeyFieldName(aggregationOption) {
   switch(aggregationOption) {
-  case 'day':
-    return t => { moment.unix(t.dateClosed).format('YYYY-MM-DD') }
-  case 'week':
-    return t => { moment.unix(t.dateClosed).format('YYYY ww') }
-  case 'month'
-    return t => { moment.unix(t.dateClosed).format('YYYY-MM') }
+  case 'daily':
+    return 'day'
+  case 'weekly':
+    return 'week'
+  case 'monthly':
+    return 'month'
   }
 }
 
@@ -157,7 +157,7 @@ function getManiphestSearchParams() {
 
 function getRangeFromArgs() {
   const range = {
-    rangeStartEvent: EVENT_CLOSED
+    rangeStartEvent: EVENT_CLOSED,
     rangeEndEvent: EVENT_CLOSED
   }
 

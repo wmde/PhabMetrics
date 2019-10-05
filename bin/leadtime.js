@@ -39,6 +39,7 @@ const canduit = createCanduit({
 	maniphestSearch.call(maniphestSearchParams)
 		.then((results) => {
 			if (!results || !Array.isArray(results.data)) {
+				console.log(results)
 				return []
 			}
 
@@ -108,7 +109,7 @@ function getRangeFromArgs() {
 		if (toDate) {
 			range.rangeEnd = moment(args.toDate)
 		} else {
-			range.rangeEnd = rangeStart.clone()
+			range.rangeEnd = range.rangeStart.clone()
 		}
 	} else if (week) {
 		range.rangeStart = moment().week(week).startOf('week')
