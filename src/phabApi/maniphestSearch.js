@@ -1,5 +1,29 @@
 const moment = require('moment')
 
+const EVENT_CREATED = 'created'
+const EVENT_UPDATED = 'updated'
+const EVENT_CLOSED = 'closed'
+const EVENT_TYPES = [ EVENT_CLOSED, EVENT_UPDATED, EVENT_CREATED]
+
+function isValidEvent(event) {
+  return EVENT_TYPES.indexOf(event) > -1
+}
+
+function getRangeEvents({ rangeStartEvent, rangeEndEvent }) {
+    rangeStartEvent = rangeStartEvent || EVENT_CREATED
+    rangeEndEvent = rangeEndEvent || EVENT_CLOSED
+
+    if (!isValidEvent(rangeStartEvent)) {
+      throw `rangeStartEvent '${rangeStartEvent}' is invalid. Options are ${EVENT_TYPES}`
+    }
+
+    if (!isValidEvent(rangeEndEvent)) {
+      throw `rangeEndEvent '${rangeEndEvent}' is invalid. Options are ${EVENT_TYPES}`
+    }
+
+    return { rangeStartEvent, rangeEndEvent }
+  }
+
 class ManiphestSearch {
   get canduit() {
     return this._canduit
@@ -16,6 +40,7 @@ class ManiphestSearch {
   async call(params = {}) {
     let { statuses, projects, subtypes, rangeStart, rangeEnd } = params
 
+    const { rangeStartEvent, rangeEndEvent } = getRangeEvents(params)
     if (!moment.isMoment(rangeStart)) {
       rangeStart = moment().startOf('week')
     } else {
@@ -30,8 +55,8 @@ class ManiphestSearch {
 
     return new Promise( (resolve, reject) => {
       const constraints = {
-        createdStart: rangeStart.unix(),
-        closedEnd: rangeEnd.unix()
+        [`${rangeStartEvent}Start`]: rangeStart.unix(),
+        [`${rangeEndEvent}End`]: rangeEnd.unix()
       }
 
       if (Array.isArray(statuses) && statuses.length) {
@@ -61,5 +86,8 @@ const createManiphestSearch = function (canduit) {
 
 module.exports = {
   createManiphestSearch,
-  ManiphestSearch
+  ManiphestSearch,
+  EVENT_CREATED,
+  EVENT_UPDATED,
+  EVENT_CLOSED
 }
