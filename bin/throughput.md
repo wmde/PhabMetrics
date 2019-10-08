@@ -39,6 +39,7 @@ the order they were given below):
 
 # Examples
 
+export CONDUIT_API_BASE='https://yourdomain/phabricator/api'
 export CONDUIT_API_TOKEN='******'
 
 node throughput.js --week 1 --daily
@@ -81,6 +82,7 @@ the order they were given below):
 ``` shell
 # Examples
 
+export CONDUIT_API_BASE='https://yourdomain/phabricator/api'
 export CONDUIT_API_TOKEN='******'
 
 node throughput.js --fromDate 2019-01-01
@@ -96,6 +98,7 @@ node throughput.js --week 10
 ``` shell
 # Examples
 
+export CONDUIT_API_BASE='https://yourdomain/phabricator/api'
 export CONDUIT_API_TOKEN='******'
 
 node throughput.js --projects Wikidata
@@ -110,6 +113,7 @@ node throughput.js --projects Wikidata --projects Wikidata-Campsite
 ``` shell
 # Examples
 
+export CONDUIT_API_BASE='https://yourdomain/phabricator/api'
 export CONDUIT_API_TOKEN='******'
 
 node throughput.js --subtypes bug
