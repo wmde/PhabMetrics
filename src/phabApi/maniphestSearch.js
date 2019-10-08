@@ -1,8 +1,29 @@
 const moment = require('moment')
 
+/**
+ * Task creation event. Used as value to rangeStartEvent and rangeEndEvent
+ * params to {@link ManiphestSearch#call}
+ * @constant
+ * @type {string}
+*/
 const EVENT_CREATED = 'created'
+
+/**
+ * Task update event. Used as value to rangeStartEvent and rangeEndEvent
+ * params to {@link ManiphestSearch#call}
+ * @constant
+ * @type {string}
+ */
 const EVENT_UPDATED = 'updated'
+
+/**
+ * Task closing event. Used as value to rangeStartEvent and rangeEndEvent
+ * params to {@link ManiphestSearch#call}
+ * @constant
+ * @type {string}
+ */
 const EVENT_CLOSED = 'closed'
+
 const EVENT_TYPES = [ EVENT_CREATED, EVENT_UPDATED, EVENT_CLOSED]
 
 function validateEvents(rangeStartEvent, rangeEndEvent) {
@@ -44,6 +65,18 @@ class ManiphestSearch {
     this.canduit = canduit
   }
 
+	/**
+	 * Calls phabricator endpoint to search for maniphest tasks
+	 * @param {Object} params
+	 * @param {string[]} [params.statuses] filter search for given statuses, if any given
+	 * @param {string[]} [params.projects] filter search for given projects, if any given
+	 * @param {string[]} [params.subtypes] filter search for given subtypes, if any given
+	 * @param {moment}	 [rangeStart] 		 start of date range within which to search for tasks
+	 * @param {string}	 [rangeStartEvent] the event the tasks need to have happened after date range start to be selected
+	 * @param {moment}	 [rangeEnd] 			 end of date range within which to search for tasks
+	 * @param {string}	 [rangeEndEvent] 	 the event the tasks need to have happened before date range end to be selected
+	 * @return {Promise} Promise will resolve with result object from Canduit, or error on client, server or conduit errors
+	 */
   call(params = {}) {
     let { statuses, projects, subtypes, rangeStart, rangeEnd } = params
 
@@ -87,6 +120,9 @@ class ManiphestSearch {
   }
 }
 
+/**
+ * @param {Object} canduit - {@link https://github.com/uber/canduit Canduit} instance
+ */
 const createManiphestSearch = function (canduit) {
   return new ManiphestSearch(canduit)
 }
