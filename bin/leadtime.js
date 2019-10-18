@@ -108,7 +108,7 @@ function getRangeFromArgs() {
 		if (toDate) {
 			range.rangeEnd = moment(args.toDate)
 		} else {
-			range.rangeEnd = rangeStart.clone()
+			range.rangeEnd = range.rangeStart.clone()
 		}
 	} else if (week) {
 		range.rangeStart = moment().week(week).startOf('week')
