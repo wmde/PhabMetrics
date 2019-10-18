@@ -39,6 +39,7 @@ the order they were given below):
 
 # Examples
 
+```
 export CONDUIT_API_BASE='https://yourdomain/phabricator/api'
 export CONDUIT_API_TOKEN='******'
 
